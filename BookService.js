@@ -2,10 +2,12 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   setIsSubmitting(true);
   try {
-    // Determine API URL based on environment
+    // Use relative path for production, localhost for development
     const apiUrl = process.env.NODE_ENV === 'production' 
-      ? '/api/bookings'  // Use relative path in production
-      : 'http://localhost:3001/api/bookings';  // Use localhost in development
+      ? '/api/bookings'  // This will work with Vercel routing
+      : 'http://localhost:3001/api/bookings';
+    
+    console.log('Submitting to:', apiUrl);
     
     const response = await fetch(apiUrl, {
       method:'POST',
