@@ -1,20 +1,17 @@
 {
-  "name": "backend",
+  "name": "vercel-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "start": "node api/index.js"
+  },
   "dependencies": {
-    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "nodemon": "^3.1.10"
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "vercel": "^32.4.1"
   }
 }
