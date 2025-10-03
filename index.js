@@ -7,6 +7,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Logging middleware for debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 // In-memory storage (for demo - replace with database in production)
 const bookings = [];
 const messages = [];
@@ -19,8 +25,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Bookings endpoint
-app.post('/api/bookings', (req, res) => {
+// Bookings endpoint - FIXED ROUTE
+app.post('/bookings', (req, res) => {
   try {
     const newBooking = req.body;
     newBooking.timestamp = new Date();
@@ -37,8 +43,8 @@ app.post('/api/bookings', (req, res) => {
   }
 });
 
-// Contact endpoint
-app.post('/api/contact', (req, res) => {
+// Contact endpoint - FIXED ROUTE
+app.post('/contact', (req, res) => {
   try {
     const { name, email, message } = req.body;
 
@@ -70,7 +76,7 @@ app.post('/api/contact', (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -81,6 +87,7 @@ app.get('/api/health', (req, res) => {
 
 // 404 handler
 app.use((req, res) => {
+  console.log(`404: ${req.method} ${req.path} not found`);
   res.status(404).json({ 
     message: 'Endpoint not found',
     path: req.path,
