@@ -3,8 +3,25 @@ import cors from 'cors';
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173', // Vite default port
+  'https://sandeep-studio-website.vercel.app' // Your frontend URL
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Logging middleware for debugging
@@ -25,7 +42,17 @@ app.get('/', (req, res) => {
   });
 });
 
-// Bookings endpoint - FIXED ROUTE
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
+
+// Bookings endpoint - POST only
 app.post('/bookings', (req, res) => {
   try {
     const newBooking = req.body;
@@ -43,7 +70,16 @@ app.post('/bookings', (req, res) => {
   }
 });
 
-// Contact endpoint - FIXED ROUTE
+// Handle GET requests to /bookings (return error)
+app.get('/bookings', (req, res) => {
+  res.status(405).json({ 
+    message: 'Method not allowed. Please use POST to create bookings.',
+    path: req.path,
+    method: req.method
+  });
+});
+
+// Contact endpoint - POST only
 app.post('/contact', (req, res) => {
   try {
     const { name, email, message } = req.body;
@@ -75,13 +111,12 @@ app.post('/contact', (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage()
+// Handle GET requests to /contact (return error)
+app.get('/contact', (req, res) => {
+  res.status(405).json({ 
+    message: 'Method not allowed. Please use POST to send messages.',
+    path: req.path,
+    method: req.method
   });
 });
 
